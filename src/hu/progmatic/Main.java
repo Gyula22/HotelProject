@@ -1,6 +1,11 @@
 package hu.progmatic;
 
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -134,17 +139,20 @@ public class Main {
         String stay = enter.nextLine();
         if (stay.equalsIgnoreCase("igen")) {
             System.out.println("Köszönöm.");
-        } else {
-            System.out.println("Köszönjük érdeklődését, viszontlátásra.");
-        }
+            System.out.println();
+
 
             System.out.println("Hány éjszakát szeretne? ");
             Scanner scanner = new Scanner(System.in);
             int nights = scanner.nextInt();
 
-            System.out.println("A szoba tipusok:" + '\n' + "1, Normál szoba." + '\n' + "2, Első osztály" + '\n' + "3, Elnöki lakosztály" + '\n' + "4, Nászuitas lakosztály");
+            System.out.println("A szoba tipusok:" + '\n' + "1, Normál szoba. Ft/éj: " + generalRoom.getPrice() +
+                    '\n' + "2, Első osztály. Ft/éj " + +deluxeRoom.getPrice() +
+                    '\n' + "3, Elnöki lakosztály. Ft/éj: " + presidentRoom.getPrice() +
+                    '\n' + "4, Nászuitas lakosztály. Ft/éj: " + honeymoonRoom.getPrice());
 
 
+            System.out.println();
             System.out.println("Kérem válasszon szobatipust:");
             Scanner type = new Scanner(System.in);
             int roomType = type.nextInt();
@@ -156,37 +164,77 @@ public class Main {
             int stayHoneymoon = honeymoonRoom.getPrice() * nights;
             int stayGeneral = generalRoom.getPrice() * nights;
 
+            int totalprice = 0;
 
             switch (roomType) {
                 case 1 -> {
                     System.out.println("A Normál szobát választottad.");
-                    System.out.println("Egy éjszaka " + generalRoom.getPrice() + " Ft-ba kerul.");
                     System.out.println();
-                    System.out.println("A teljes tartózkodás " + stayGeneral + " Ft-ba fog kerülni.");
+                    System.out.println(" --> Egy éjszaka " + generalRoom.getPrice() + " Ft-ba kerul.");
+                    System.out.println();
+                    System.out.println(" --> A teljes tartózkodás " + stayGeneral + " Ft-ba fog kerülni.");
+                    System.out.println("-------------------------------");
+                    totalprice = stayGeneral;
                 }
                 case 2 -> {
                     System.out.println("Az Első osztályú szobát választottad.");
-                    System.out.println("Egy éjszaka " + deluxeRoom.getPrice() + " Ft-ba kerul.");
                     System.out.println();
-                    System.out.println("A teljes tartózkodás " + stayDeluxe + " Ft-ba fog kerülni.");
+                    System.out.println(" --> Egy éjszaka " + deluxeRoom.getPrice() + " Ft-ba kerul.");
+                    System.out.println();
+                    System.out.println(" --> A teljes tartózkodás " + stayDeluxe + " Ft-ba fog kerülni.");
+                    System.out.println("-------------------------------");
+                    totalprice = stayDeluxe;
                 }
                 case 3 -> {
                     System.out.println("Az elnöki lakosztályt választottad.");
-                    System.out.println("Egy éjszaka " + presidentRoom.getPrice() + " Ft ba kerul.");
                     System.out.println();
-                    System.out.println("A teljes tartózkodás " + stayPresident + " Ft ba fog kerülni.");
+                    System.out.println(" --> Egy éjszaka " + presidentRoom.getPrice() + " Ft ba kerul.");
+                    System.out.println();
+                    System.out.println(" --> A teljes tartózkodás " + stayPresident + " Ft ba fog kerülni.");
+                    System.out.println("-------------------------------");
+                    totalprice = stayPresident;
                 }
                 case 4 -> {
                     System.out.println("A Nászutas lakosztályt választottad");
-                    System.out.println("Egy éjszaka " + honeymoonRoom.getPrice() + " Ft ba kerul.");
                     System.out.println();
-                    System.out.println("A teljes tartózkodás " + stayHoneymoon + " Ft ba fog kerülni.");
+                    System.out.println(" --> Egy éjszaka " + honeymoonRoom.getPrice() + " Ft ba kerul.");
+                    System.out.println();
+                    System.out.println(" --> A teljes tartózkodás " + stayHoneymoon + " Ft ba fog kerülni.");
+                    System.out.println("-------------------------------");
+                    totalprice = stayHoneymoon;
                 }
                 default -> System.out.println("Nincs ilyen szoba.");
             }
 
+            System.out.println("A számlázáshoz kérem adja meg az adatait!");
+            System.out.println("Az Ön neve:");
+            Scanner name = new Scanner(System.in);
+            String customerName = name.nextLine();
+            System.out.println("Az Ön igazolványszáma:");
+            Scanner id = new Scanner(System.in);
+            String customerId = id.nextLine();
+            System.out.println("Az Ön lakcíme:");
+            Scanner address = new Scanner(System.in);
+            String customerAddress = address.nextLine();
 
+            System.out.println("Köszönjük a foglalását, a számlát a Bill.txt-ben találja :-)  ");
+
+
+            try (PrintWriter writer = new PrintWriter(("Bill.txt"))) {
+                writer.println("================================" + "\n" +
+                        "\t \t \t SZÁMLA" + "\n" +
+                        "================================" +
+                        "\n Név: " + customerName + "\n " + "Igazolványszám: " + customerId
+                        + "\n " + "Lakcím: " + customerAddress + "\n " + "Szobatípus: " + roomType
+                        + "\n " + "Éjszakák száma: " + nights + "\n " + " \n" + "Számla végösszege: " + totalprice);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Köszönjük érdeklődését, viszontlátásra.");
         }
-    }
 
+    }
+}
 
